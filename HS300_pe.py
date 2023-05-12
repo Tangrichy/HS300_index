@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 
 # login 
 
+
+
 sem = Semaphore(5) 
 def thslogindemo():
     # 输入用户的帐号和密码
