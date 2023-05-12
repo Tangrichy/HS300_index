@@ -13,6 +13,7 @@ def signal(x, up_bond = 0.95, low_bond= 0):
         return -1
     else:
         return 0
+    
 
 
 def backtest(signal_data, price_data, holding_period, direction):
