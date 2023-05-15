@@ -30,3 +30,92 @@ pb_rank =pb_rank.reset_index()
 roverrt_rank = roverrt_rank.reset_index()
 pbpe_rank = pbpe_rank.reset_index()
 close = close.reset_index()
+
+fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
+plt.grid(1)
+ax1.plot(pb_rank.Date, pb_rank['HS300_pb'], color = 'blue', label = "PB")
+ax1.set_ylabel("PE")
+ax2 = ax1.twinx()
+ax2.plot(close.Date, close['HS300_close'], color = 'orange', label = "Close")
+ax2.set_ylabel("Close")
+ax1.set_xlabel("Date")
+plt.title("PB and Close")
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 +labels2, loc = "best")
+plt.show()
+
+
+## PE
+fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
+plt.grid(1)
+ax1.plot(pe_rank.Date, pe_rank['HS300_pe'], color = 'blue', label = "PE")
+ax1.set_ylabel("PE")
+ax2 = ax1.twinx()
+ax2.plot(close.Date, close['HS300_close'], color = 'orange', label = "Close")
+ax2.set_ylabel("Close")
+ax1.set_xlabel("Date")
+plt.title("PE and Close")
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 +labels2, loc = "best")
+plt.show()
+
+## PBPE
+fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
+plt.grid(1)
+ax1.plot(pbpe_rank.Date, pbpe_rank['HS300_pbpe'], color = 'blue', label = "PBPE")
+ax1.set_ylabel("PBPE")
+ax2 = ax1.twinx()
+ax2.plot(close.Date, close['HS300_close'], color = 'orange', label = "Close")
+ax2.set_ylabel("Close")
+ax1.set_xlabel("Date")
+plt.title("PBPE and Close")
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 +labels2, loc = "best")
+plt.show()
+
+
+## risk
+fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
+plt.grid(1)
+ax1.plot(roverrt_rank.Date, roverrt_rank['HS300_risk'], color = 'blue', label = "ROVERRT")
+ax1.set_ylabel("roverrt")
+ax2 = ax1.twinx()
+ax2.plot(close.Date, close['HS300_close'], color = 'orange', label = "Close")
+ax2.set_ylabel("Close")
+ax1.set_xlabel("Date")
+plt.title("ROVERRT and Close")
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 +labels2, loc = "best")
+plt.show()
+
+## risk and pbpe
+
+fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
+plt.grid(1)
+ax1.plot(roverrt_rank.Date, roverrt_rank['HS300_risk'], color = 'blue', label = "ROVERRT")
+ax1.plot(roverrt_rank.Date, pbpe_rank['HS300_pbpe'], color = 'green', label = "PBPE")
+ax1.set_ylabel("roverrt")
+ax2 = ax1.twinx()
+ax2.plot(close.Date, close['HS300_close'], color = 'orange', label = "Close")
+ax2.set_ylabel("Close")
+ax1.set_xlabel("Date")
+plt.title("ROVERRT and Close")
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 +labels2, loc = "best")
+plt.show()
+
+### Note: Consider pbpe and risk at same time. PBPE or risk achieve the low 5% or high 95%
+### it will relase long or short signal
+### PBPE or risk achieve 60% or 40% after reach low bond or high bond
+
+### back test for hold a constant period
+## creat signal for each factor
+pe_rank['Signal'] = pe_rank['HS300_pe'].apply(signal)
+pb_rank['Signal'] = pb_rank['HS300_pb'].apply(signal)
+pbpe_rank['Signal'] = pbpe_rank['HS300_pbpe'].apply(signal)
+roverrt_rank['Signal'] = roverrt_rank['HS300_risk'].apply(signal)
