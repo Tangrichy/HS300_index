@@ -11,8 +11,6 @@ def signal(x, up_bond = 0.95, low_bond= 0):
     else:
         return 0
     
-
-
 def backtest(signal_data, price_data, holding_period, direction):
 
     ## data process
@@ -201,8 +199,8 @@ def upper_singal_two(data, upper_bond, upper_clear):
 
 #######
 
-pe_low_signal = low_singal(data = pbpe_rank, low_bond=0.05, low_clear=0.4)
-pe_upper_signal = upper_singal(data = pbpe_rank, upper_bond=0.95, upper_clear=0.7)
+#pe_low_signal = low_singal(data = pbpe_rank, low_bond=0.05, low_clear=0.4)
+#pe_upper_signal = upper_singal(data = pbpe_rank, upper_bond=0.95, upper_clear=0.7)
 
 ## backtest for daily profit
 

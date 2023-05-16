@@ -15,12 +15,18 @@ close = df[['HS300_close']]
 close = close[close.index >= "2018-01-01"]
 roverrt = df[["HS300_risk"]]
 
+# obtain the length of window
+windwo_len = len(roverrt[roverrt.index <= '2017-12-31']) + 1
+
 ## Rank
 
 # obtain rank
-pe_rank= pe.rolling(1216).rank(pct= True).dropna()
-pb_rank = pb.rolling(1216).rank(pct= True).dropna()
-roverrt_rank = roverrt.rolling(1216).rank(pct = True, ascending=False).dropna()
+variable_rank(data = pe, inital_window = windwo_len)
+
+
+pe_rank= pe.rolling(windwo_len).rank(pct= True).dropna()
+pb_rank = pb.rolling(windwo_len).rank(pct= True).dropna()
+roverrt_rank = roverrt.rolling(windwo_len).rank(pct = True, ascending=False).dropna()
 
 pbpe = (pe_rank["HS300_pe"] + pb_rank["HS300_pb"])/2
 pbpe_rank = pd.DataFrame(pbpe, index=pbpe.index, columns= ["HS300_pbpe"])
@@ -115,7 +121,27 @@ plt.show()
 
 ### back test for hold a constant period
 ## creat signal for each factor
-pe_rank['Signal'] = pe_rank['HS300_pe'].apply(signal)
-pb_rank['Signal'] = pb_rank['HS300_pb'].apply(signal)
-pbpe_rank['Signal'] = pbpe_rank['HS300_pbpe'].apply(signal)
-roverrt_rank['Signal'] = roverrt_rank['HS300_risk'].apply(signal)
+
+pbpe_low_signal = low_singal(data = pbpe_rank, low_bond=0.05, low_clear=0.4)
+pbpe_upper_signal = upper_singal(data = pbpe_rank, upper_bond=0.95, upper_clear=0.7)
+
+profit_long_pbpe = back_test_long(price_data = close, signal_data = pbpe_low_signal)
+profit_short_pbpe = back_test_short(price_data = close, signal_data = pbpe_upper_signal)
+
+plt.figure(num = 1, figsize = (12,6))
+plt.grid()
+plt.plot(close["Date"], close["HS300_close"], label = "Close")
+plt.plot(profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Long'].Date, profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Long']["HS300_close"], "+", label = "Long")
+plt.plot(profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Clear'].Date, profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Clear']["HS300_close"], "o", label = "Long_Clear")
+plt.plot(profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Short'].Date, profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Short']["HS300_close"], "v", label = "Short")
+plt.plot(profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Clear'].Date, profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Clear']["HS300_close"], "^", label = "Short_Clear")
+leg = plt.legend(loc='upper left')
+plt.title("PBPE and Price")
+plt.xlabel('Date')
+plt.show()
+
+
+
+roverrt_low_signal = low_singal(data = roverrt_rank, low_bond=0.05, low_clear=0.4)
+roverrt_signal = upper_singal(data = roverrt_rank, upper_bond=0.95, upper_clear=0.7)
+
