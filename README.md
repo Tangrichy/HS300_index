@@ -6,3 +6,12 @@
 
 `Evaluation.py`: 价值因子
 `Crowding.py`: 拥挤度因子
+
+**回测**
+
+1. PBPE
+
+   ![](back_test_pbpe.png)
+
+2. Roverrt
+   ![](back_test_roverrt.png)
