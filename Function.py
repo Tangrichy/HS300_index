@@ -322,3 +322,14 @@ def low_singal_crowded_two(data_1,data_2, low_bond, low_clear, crowded_data, aft
     output = pd.DataFrame(output)
 
     return output
+
+if __name__ == "__main__":
+    signal(x, up_bond = 0.95, low_bond= 0)
+    variable_rank(data, inital_window, sort = True,index = True)
+    low_singal(data, low_bond, low_clear)
+    upper_singal(data, upper_bond, upper_clear)
+    low_singal_two(data, low_bond, low_clear)
+    upper_singal_two(data, upper_bond, upper_clear)
+    back_test_long(price_data, signal_data)
+    back_test_short(price_data, signal_data)
+    dual_plot(price_data, factor_data, title, y_axis)

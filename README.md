@@ -32,3 +32,22 @@
 6. PBPE Roverrt加上Crowding
 
    ![](./plot/pbpe_roverrt_crowding.png)
+
+
+
+**盈利**
+
+1. PBPE
+
+   ![](./plot/profit_pbpe.png)
+
+2. Roverrt
+
+   ![](./plot/profit_roverrt.png)
+
+3. PBPE
+
+   ![](./plot/profit_pbpe_roverrt.png)
+
+profit_pbpe_roverrt: 77259.3542
+profit_roverrt: 76736.3364

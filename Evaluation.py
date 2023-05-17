@@ -1,8 +1,4 @@
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
+from Function import * 
 
 df = pd.read_excel("./HS300_data_updated.xlsx")
 df['Date'] = pd.to_datetime(df['Date'])
@@ -16,13 +12,12 @@ close = close[close.index >= "2018-01-01"]
 roverrt = df[["HS300_risk"]]
 
 # obtain the length of window
+
 windwo_len = len(roverrt[roverrt.index <= '2017-12-31']) + 1
 
 ## Rank
 
 # obtain rank
-variable_rank(data = pe, inital_window = windwo_len)
-
 
 pe_rank= pe.rolling(windwo_len).rank(pct= True).dropna()
 pb_rank = pb.rolling(windwo_len).rank(pct= True).dropna()
@@ -119,6 +114,7 @@ plt.show()
 ### it will relase long or short signal
 ### PBPE or risk achieve 60% or 40% after reach low bond or high bond
 
+
 ### back test for hold a constant period
 ## creat signal for each factor
 
@@ -127,6 +123,12 @@ pbpe_upper_signal = upper_singal(data = pbpe_rank, upper_bond=0.95, upper_clear=
 
 profit_long_pbpe = back_test_long(price_data = close, signal_data = pbpe_low_signal)
 profit_short_pbpe = back_test_short(price_data = close, signal_data = pbpe_upper_signal)
+
+profit_pbpe = {"Date": profit_long_pbpe["Date"], "Daily_long": profit_long_pbpe["daily_Profit"], "Daily_Short": profit_short_pbpe["daily_Profit"]}
+profit_pbpe = pd.DataFrame(profit_pbpe)
+profit_pbpe["Total"] = profit_pbpe["Daily_long"].cumsum() + profit_pbpe["Daily_Short"].cumsum()
+
+
 
 plt.figure(num = 1, figsize = (12,6))
 plt.grid()
@@ -140,28 +142,104 @@ plt.title("PBPE and Price")
 plt.xlabel('Date')
 plt.show()
 
-
+fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
+plt.grid(1)
+ax1.plot(close["Date"], close["HS300_close"], label = "Close")
+ax1.plot(profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Long'].Date, profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Long']["HS300_close"], "+", label = "Long")
+ax1.plot(profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Clear'].Date, profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Clear']["HS300_close"], "o", label = "Long_Clear")
+ax1.plot(profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Short'].Date, profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Short']["HS300_close"], "v", label = "Short")
+ax1.plot(profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Clear'].Date, profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Clear']["HS300_close"], "^", label = "Short_Clear")
+ax1.set_ylabel("Close")
+ax2 = ax1.twinx()
+ax2.plot(profit_pbpe["Date"], profit_pbpe["Total"], color = "orange",label = "Profit")
+ax2.set_ylabel("Profit")
+ax1.set_xlabel("Date")
+plt.title("PBPE Profit")
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 +labels2, loc = "upper left")
+plt.show()
 
 roverrt_low_signal = low_singal(data = roverrt_rank, low_bond=0.05, low_clear=0.6)
 roverrt_upper_signal = upper_singal(data = roverrt_rank, upper_bond=0.95, upper_clear=0.4)
-profit_long_pbpe = back_test_long(price_data = close, signal_data = roverrt_low_signal)
-profit_short_pbpe = back_test_short(price_data = close, signal_data = roverrt_upper_signal)
+profit_long_roverrt = back_test_long(price_data = close, signal_data = roverrt_low_signal)
+profit_short_roverrt = back_test_short(price_data = close, signal_data = roverrt_upper_signal)
+
+profit_roverrt = {"Date": profit_long_roverrt["Date"], "Daily_long": profit_long_roverrt["daily_Profit"], "Daily_Short": profit_short_roverrt["daily_Profit"]}
+profit_roverrt = pd.DataFrame(profit_roverrt)
+profit_roverrt["Total"] = profit_roverrt["Daily_long"].cumsum() + profit_roverrt["Daily_Short"].cumsum()
+
 
 plt.figure(num = 1, figsize = (12,6))
 plt.grid()
 plt.plot(close["Date"], close["HS300_close"], label = "Close")
-plt.plot(profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Long'].Date, profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Long']["HS300_close"], "+", label = "Long")
-plt.plot(profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Clear'].Date, profit_long_pbpe[profit_long_pbpe["Signal_long"] == 'Clear']["HS300_close"], "o", label = "Long_Clear")
-plt.plot(profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Short'].Date, profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Short']["HS300_close"], "v", label = "Short")
-plt.plot(profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Clear'].Date, profit_short_pbpe[profit_short_pbpe["Signal_short"] == 'Clear']["HS300_close"], "^", label = "Short_Clear")
+plt.plot(profit_long_roverrt[profit_long_roverrt["Signal_long"] == 'Long'].Date, profit_long_roverrt[profit_long_roverrt["Signal_long"] == 'Long']["HS300_close"], "+", label = "Long")
+plt.plot(profit_long_roverrt[profit_long_roverrt["Signal_long"] == 'Clear'].Date, profit_long_roverrt[profit_long_roverrt["Signal_long"] == 'Clear']["HS300_close"], "o", label = "Long_Clear")
+plt.plot(profit_short_roverrt[profit_short_roverrt["Signal_short"] == 'Short'].Date, profit_short_roverrt[profit_short_roverrt["Signal_short"] == 'Short']["HS300_close"], "v", label = "Short")
+plt.plot(profit_short_roverrt[profit_short_roverrt["Signal_short"] == 'Clear'].Date, profit_short_roverrt[profit_short_roverrt["Signal_short"] == 'Clear']["HS300_close"], "^", label = "Short_Clear")
 leg = plt.legend(loc='upper left')
 plt.title("Roverrt and Price")
 plt.xlabel('Date')
 plt.show()
 
+fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
+plt.grid(1)
+ax1.plot(close["Date"], close["HS300_close"], label = "Close")
+ax1.plot(profit_long_roverrt[profit_long_roverrt["Signal_long"] == 'Long'].Date, profit_long_roverrt[profit_long_roverrt["Signal_long"] == 'Long']["HS300_close"], "+", label = "Long")
+ax1.plot(profit_long_roverrt[profit_long_roverrt["Signal_long"] == 'Clear'].Date, profit_long_roverrt[profit_long_roverrt["Signal_long"] == 'Clear']["HS300_close"], "o", label = "Long_Clear")
+ax1.plot(profit_short_roverrt[profit_short_roverrt["Signal_short"] == 'Short'].Date, profit_short_roverrt[profit_short_roverrt["Signal_short"] == 'Short']["HS300_close"], "v", label = "Short")
+ax1.plot(profit_short_roverrt[profit_short_roverrt["Signal_short"] == 'Clear'].Date, profit_short_roverrt[profit_short_roverrt["Signal_short"] == 'Clear']["HS300_close"], "^", label = "Short_Clear")
+ax1.set_ylabel("Close")
+ax2 = ax1.twinx()
+ax2.plot(profit_roverrt["Date"], profit_roverrt["Total"], color = "orange",label = "Profit")
+ax2.set_ylabel("Profit")
+ax1.set_xlabel("Date")
+plt.title("Roverrt Profit")
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 +labels2, loc = "upper left")
+plt.show()
+
 pbpe_roverrt = pbpe_rank.merge(roverrt_rank, on = "Date")
 
-both_low_signal = low_singal_two(data = pbpe_roverrt, low_bond = 0.05, low_clear = 0.6)
-both_upper_signal = upper_singal_two(data = pbpe_roverrt, upper_bond = 0.95, upper_clear = 0.4)
-profit_long_pbpe = back_test_long(price_data = close, signal_data = both_low_signal)
-profit_short_pbpe = back_test_short(price_data = close, signal_data = both_upper_signal)
+two_low_signal = low_singal_two(data = pbpe_roverrt, low_bond = 0.05, low_clear = 0.6)
+two_upper_signal = upper_singal_two(data = pbpe_roverrt, upper_bond = 0.95, upper_clear = 0.4)
+profit_long_two = back_test_long(price_data = close, signal_data = two_low_signal)
+profit_short_two = back_test_short(price_data = close, signal_data = two_upper_signal)
+
+plt.figure(num = 1, figsize = (12,6))
+plt.grid()
+plt.plot(close["Date"], close["HS300_close"], label = "Close")
+plt.plot(profit_long_two[profit_long_two["Signal_long"] == 'Long'].Date, profit_long_two[profit_long_two["Signal_long"] == 'Long']["HS300_close"], "+", label = "Long")
+plt.plot(profit_long_two[profit_long_two["Signal_long"] == 'Clear'].Date, profit_long_two[profit_long_two["Signal_long"] == 'Clear']["HS300_close"], "o", label = "Long_Clear")
+plt.plot(profit_short_two[profit_short_two["Signal_short"] == 'Short'].Date, profit_short_two[profit_short_two["Signal_short"] == 'Short']["HS300_close"], "v", label = "Short")
+plt.plot(profit_short_two[profit_short_two["Signal_short"] == 'Clear'].Date, profit_short_two[profit_short_two["Signal_short"] == 'Clear']["HS300_close"], "^", label = "Short_Clear")
+leg = plt.legend(loc='upper left')
+plt.title("PBPE roverrt and Price")
+plt.xlabel('Date')
+plt.show()
+
+profit_two = {"Date": profit_long_two["Date"], "Daily_long": profit_long_two["daily_Profit"], "Daily_Short": profit_short_two["daily_Profit"]}
+profit_two = pd.DataFrame(profit_two)
+profit_two["Total"] = profit_two["Daily_long"].cumsum() + profit_two["Daily_Short"].cumsum()
+
+fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
+plt.grid(1)
+ax1.plot(close["Date"], close["HS300_close"], label = "Close")
+ax1.plot(profit_long_two[profit_long_two["Signal_long"] == 'Long'].Date, profit_long_two[profit_long_two["Signal_long"] == 'Long']["HS300_close"], "+", label = "Long")
+ax1.plot(profit_long_two[profit_long_two["Signal_long"] == 'Clear'].Date, profit_long_two[profit_long_two["Signal_long"] == 'Clear']["HS300_close"], "o", label = "Long_Clear")
+ax1.plot(profit_short_two[profit_short_two["Signal_short"] == 'Short'].Date, profit_short_two[profit_short_two["Signal_short"] == 'Short']["HS300_close"], "v", label = "Short")
+ax1.plot(profit_short_two[profit_short_two["Signal_short"] == 'Clear'].Date, profit_short_two[profit_short_two["Signal_short"] == 'Clear']["HS300_close"], "^", label = "Short_Clear")
+ax1.set_ylabel("Close")
+ax2 = ax1.twinx()
+ax2.plot(profit_roverrt["Date"], profit_roverrt["Total"], color = "orange",label = "Profit")
+ax2.set_ylabel("Profit")
+ax1.set_xlabel("Date")
+plt.title("PBPE Roverrt Profit")
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 +labels2, loc = "upper left")
+plt.show()
+
+profit_two # 77259.3542
+profit_roverrt # 76736.3364
