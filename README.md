@@ -23,12 +23,12 @@
 
 4. PBPE加上拥挤度指数
 
-   ![](.\plot\pbpe_crowding.png)
+   ![](./plot/pbpe_crowding.png)
 
 5. Roverrt加上Crowding
 
-   ![](.\plot\roverrt_crowding.png)
+   ![](./plot/roverrt_crowding.png)
 
 6. PBPE Roverrt加上Crowding
 
-   ![](.\plot\pbpe_roverrt_crowding.png)
+   ![](./plot/pbpe_roverrt_crowding.png)
