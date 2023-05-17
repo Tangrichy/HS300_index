@@ -122,8 +122,8 @@ plt.show()
 ### back test for hold a constant period
 ## creat signal for each factor
 
-pbpe_low_signal = low_singal(data = pbpe_rank, low_bond=0.05, low_clear=0.4)
-pbpe_upper_signal = upper_singal(data = pbpe_rank, upper_bond=0.95, upper_clear=0.7)
+pbpe_low_signal = low_singal(data = pbpe_rank, low_bond=0.05, low_clear=0.6)
+pbpe_upper_signal = upper_singal(data = pbpe_rank, upper_bond=0.95, upper_clear=0.4)
 
 profit_long_pbpe = back_test_long(price_data = close, signal_data = pbpe_low_signal)
 profit_short_pbpe = back_test_short(price_data = close, signal_data = pbpe_upper_signal)
@@ -142,8 +142,8 @@ plt.show()
 
 
 
-roverrt_low_signal = low_singal(data = roverrt_rank, low_bond=0.05, low_clear=0.4)
-roverrt_upper_signal = upper_singal(data = roverrt_rank, upper_bond=0.95, upper_clear=0.7)
+roverrt_low_signal = low_singal(data = roverrt_rank, low_bond=0.05, low_clear=0.6)
+roverrt_upper_signal = upper_singal(data = roverrt_rank, upper_bond=0.95, upper_clear=0.4)
 profit_long_pbpe = back_test_long(price_data = close, signal_data = roverrt_low_signal)
 profit_short_pbpe = back_test_short(price_data = close, signal_data = roverrt_upper_signal)
 
@@ -158,3 +158,10 @@ leg = plt.legend(loc='upper left')
 plt.title("Roverrt and Price")
 plt.xlabel('Date')
 plt.show()
+
+pbpe_roverrt = pbpe_rank.merge(roverrt_rank, on = "Date")
+
+both_low_signal = low_singal_two(data = pbpe_roverrt, low_bond = 0.05, low_clear = 0.6)
+both_upper_signal = upper_singal_two(data = pbpe_roverrt, upper_bond = 0.95, upper_clear = 0.4)
+profit_long_pbpe = back_test_long(price_data = close, signal_data = both_low_signal)
+profit_short_pbpe = back_test_short(price_data = close, signal_data = both_upper_signal)

@@ -222,18 +222,103 @@ def back_test_short(price_data, signal_data):
 
     return data
 
-def dual_plot(price_data, factor_data):
+def dual_plot(price_data, factor_data, title, y_axis):
 
     fig, ax1 = plt.subplots(num = 1, figsize = (12,6))
     plt.grid(1)
     ax1.plot(factor_data.Date, factor_data.iloc[:,1], color = 'blue', label = factor_data.iloc[:,1].name)
-    ax1.set_ylabel(factor_data.iloc[:,1].name)
+    ax1.set_ylabel(y_axis)
     ax2 = ax1.twinx()
     ax2.plot(price_data.Date, price_data.iloc[:,1], color = 'orange', label = "Close")
     ax2.set_ylabel("Close")
     ax1.set_xlabel("Date")
-    plt.title(f"{factor_data.iloc[:,1].name} and Close")
+    plt.title(title)
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 +labels2, loc = "best")
     plt.show()
+
+def low_singal_crowded(data, low_bond, low_clear, crowded_data, after_day):
+    data = data.merge(crowded_data, on = "Date")
+
+    singal_long = ["Keep"]
+    long_position = [0]
+    long = 0
+    tagret_date = 0
+
+    for i in range(0, (len(data)-2)):
+        if data.iloc[i,1] <= low_bond:
+            long +=1
+            singal_long.append("Long")
+            long_position.append(long)
+            print(f"Make long position at {data.Date[(i+1)]}")
+        
+        elif (data.iloc[i,1] >= low_clear) &  (long>0):
+            long_position.append(long)
+            singal_long.append("Clear")
+            long = 0
+        
+        elif (crowded_data.loc[i,"Crowding"] >= 1) & (long>0):
+            tagret_date = i + after_day
+            long_position.append(long)
+            singal_long.append("Keep")
+        
+        elif (i == tagret_date) & (long>0):
+            long_position.append(long)
+            singal_long.append("Clear")
+            long = 0
+
+        else:
+            singal_long.append("Keep")
+            long_position.append(long)
+    singal_long.append("Clear")
+    long_position.append(long)
+    output = {"Date": data.Date, 
+              "Signal_long": singal_long, 
+              "Long_position": long_position}
+    output = pd.DataFrame(output)
+
+    return output
+
+def low_singal_crowded_two(data_1,data_2, low_bond, low_clear, crowded_data, after_day):
+    data = data_1.merge(data_2, on = "Date")
+    data = data.merge(crowded_data, on = "Date")
+
+    singal_long = ["Keep"]
+    long_position = [0]
+    long = 0
+    tagret_date = 0
+
+    for i in range(0, (len(data)-2)):
+        if (data.iloc[i,1] <= low_bond) or (data.iloc[i,2] <= low_bond):
+            long +=1
+            singal_long.append("Long")
+            long_position.append(long)
+            print(f"Make long position at {data.Date[(i+1)]}")
+        
+        elif ((data.iloc[i,1] >= low_clear) or (data.iloc[i,2] >= low_clear)) &  (long>0):
+            long_position.append(long)
+            singal_long.append("Clear")
+            long = 0
+        
+        elif (crowded_data.loc[i,"Crowding"] >= 1) & (long>0):
+            tagret_date = i + after_day
+            long_position.append(long)
+            singal_long.append("Keep")
+        
+        elif (i == tagret_date) & (long>0):
+            long_position.append(long)
+            singal_long.append("Clear")
+            long = 0
+
+        else:
+            singal_long.append("Keep")
+            long_position.append(long)
+    singal_long.append("Clear")
+    long_position.append(long)
+    output = {"Date": data.Date, 
+              "Signal_long": singal_long, 
+              "Long_position": long_position}
+    output = pd.DataFrame(output)
+
+    return output
