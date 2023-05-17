@@ -23,12 +23,12 @@
 
 4. PBPE加上拥挤度指数
 
-   ![](C:\Users\Richy\Documents\HS300_index\plot\pbpe_crowding.png)
+   ![](.\plot\pbpe_crowding.png)
 
 5. Roverrt加上Crowding
 
-   ![](C:\Users\Richy\Documents\HS300_index\plot\roverrt_crowding.png)
+   ![](.\plot\roverrt_crowding.png)
 
 6. PBPE Roverrt加上Crowding
 
-   ![](C:\Users\Richy\Documents\HS300_index\plot\pbpe_roverrt_crowding.png)
+   ![](.\plot\pbpe_roverrt_crowding.png)
