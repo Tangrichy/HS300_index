@@ -47,3 +47,23 @@ def new_data(start_time, end_time, token, index_code= "000300.SH"):
 
 
     return output
+
+
+def new_data(time, token, index_code= "000300.SH", date_range = 250, window = 1):
+    thsHeaders = {'Content-Type': 'application/json', 'access_token': token}
+    high_low_url = "https://quantapi.51ifind.com/api/v1/basic_data_service"
+    para = {"codes":index_code,"indipara":[{"indicator":"ths_new_high_num_index","indiparams":[time,window,date_range,"101"]},{"indicator":"ths_new_low_num_index","indiparams":[time,window,date_range,"101"]}]}
+    high_low = requests.post(url=high_low_url,json=para,headers=thsHeaders)
+
+    index_json = index_df.json()
+    json_df = jsonpath(index_json, "$..tables")[0][0]
+
+    Date = json_df['time']
+    close = json_df['table']['close']
+    volume = json_df['table']['volume']
+    amt = json_df['table']['amount']
+    turn = json_df['table']['turnoverRatio']
+
+    output = {"Date": Date, "close": close, "volume": volume, "amt": amt, "turn": turn}
+    output = pd.DataFrame(output)
+    output['Date'] = pd.to_datetime(output['Date'])
