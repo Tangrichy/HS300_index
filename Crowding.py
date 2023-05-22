@@ -61,6 +61,31 @@ dual_plot(price_data=close, factor_data=vol_rank, title="vol and price", y_axis=
 dual_plot(price_data=close, factor_data=amt_rank, title="amt and price", y_axis= "amt")
 dual_plot(price_data=close, factor_data=turn_rank, title="turn and price", y_axis= "turn")
 
+## Hindenburg Omen
+
+rolling_window_hindenburg = 10
+
+new_high_low = df_corr[["High", "Low"]]
+
+new_high_low["Hindenburgsqrt"] = (np.sqrt(new_high_low["High"]).values * np.sqrt(new_high_low['Low']).values)/300
+new_high_low["HindenburgHigh"] = new_high_low["High"]/300
+new_high_low["Hindenburgdelta"] = (new_high_low["High"] - new_high_low["Low"])/300
+
+Hindenburgsqrt = new_high_low[["Hindenburgsqrt"]].rolling(rolling_window_hindenburg).mean().dropna().reset_index()
+HindenburgHigh = new_high_low["HindenburgHigh"].rolling(rolling_window_hindenburg).mean().dropna().reset_index()
+Hindenburgdelta = new_high_low["Hindenburgdelta"].rolling(rolling_window_hindenburg).mean().dropna().reset_index()
+
+window_hind = len(Hindenburgsqrt[Hindenburgsqrt["Date"] <= "2018-01-01"]) + 1
+
+Hindenburgsqrt_rank = variable_rank(data = Hindenburgsqrt, inital_window=window_hind, index = False)
+HindenburgHigh_rank = variable_rank(data = HindenburgHigh, inital_window=window_hind, index = False)
+Hindenburgdelta_rank = variable_rank(data = Hindenburgdelta, inital_window=window_hind, index = False)
+
+
+dual_plot(price_data=close, factor_data=Hindenburgsqrt_rank, title="Hindenburgsqrt", y_axis= "High_Low")
+dual_plot(price_data=close, factor_data=HindenburgHigh_rank, title="HindenburgHigh", y_axis= "High_Low")
+dual_plot(price_data=close, factor_data=Hindenburgdelta_rank, title="Hindenburgdelta", y_axis= "High_Low")
+
 
 ## correlation
 
