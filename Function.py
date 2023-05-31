@@ -3,11 +3,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-def signal(x, up_bond = 0.95, low_bond= 0):
+def crowding_upper_signal(x, up_bond = 0.95, low_bond= 0):
     if x > up_bond:
         return 1
-    elif x< low_bond:
-        return -1
+    else:
+        return 0
+
+
+def crowding_lower_signal(x, low_bond = 0.05):
+    if x < low_bond:
+        return 1
     else:
         return 0
     
@@ -220,7 +225,7 @@ def back_test_short(price_data, signal_data):
     data["Position_shift"] = data["Short_position"].shift()
     data["daily_Profit"] = (-(data["HS300_close"].diff()) * data["Position_shift"]).fillna(0)
     data.loc[data["Short_position"]== 0, "daily_Profit"] = 0
-    data["Cost"] = data["HS300_close"] * data["Short_position"] - data["daily_Profit"]
+    data["Cost"] = data["HS300_close"] * data["Short_position"] + data["daily_Profit"]
     data["Profit"] = data["daily_Profit"].cumsum()
 
     return data

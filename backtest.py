@@ -1,4 +1,4 @@
-# Back test
+ # Back test
 
 pbpe_low_signal = low_singal(data = pbpe_rank, low_bond=0.05, low_clear=0.6)
 pbpe_upper_signal = upper_singal(data = pbpe_rank, upper_bond=0.95, upper_clear=0.4)
