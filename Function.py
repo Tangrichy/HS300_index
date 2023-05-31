@@ -209,15 +209,18 @@ def back_test_long(price_data, signal_data):
     
     data["Position_shift"] = data["Long_position"].shift()
     data["daily_Profit"] = (data["HS300_close"].diff() * data["Position_shift"]).fillna(0)
+    data.loc[data["Long_position"]== 0, "daily_Profit"] = 0
+    data["Cost"] = data["HS300_close"] * data["Long_position"] - data["daily_Profit"]
     data["Profit"] = data["daily_Profit"].cumsum()
 
-    return data
+    return data[["Date", "daily_Profit", "Profit"]]
 
 def back_test_short(price_data, signal_data):
     data = price_data.merge(signal_data)
-    
     data["Position_shift"] = data["Short_position"].shift()
     data["daily_Profit"] = (-(data["HS300_close"].diff()) * data["Position_shift"]).fillna(0)
+    data.loc[data["Short_position"]== 0, "daily_Profit"] = 0
+    data["Cost"] = data["HS300_close"] * data["Short_position"] - data["daily_Profit"]
     data["Profit"] = data["daily_Profit"].cumsum()
 
     return data
