@@ -51,3 +51,11 @@
 
 profit_pbpe_roverrt: 77259.3542
 profit_roverrt: 76736.3364
+
+**回报率**
+
+1. PBPE
+   ![](./plot/return_pbpe.png)
+
+2. Roverrt
+   ![](./plot/return_roverrt.png)

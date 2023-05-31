@@ -218,7 +218,7 @@ def back_test_long(price_data, signal_data):
     data["Cost"] = data["HS300_close"] * data["Long_position"] - data["daily_Profit"]
     data["Profit"] = data["daily_Profit"].cumsum()
 
-    return data[["Date", "daily_Profit", "Profit"]]
+    return data
 
 def back_test_short(price_data, signal_data):
     data = price_data.merge(signal_data)
