@@ -288,7 +288,49 @@ def low_singal_crowded(data, low_bond, low_clear, crowded_data, after_day):
 
     return output
 
-def low_singal_crowded_two(data_1,data_2, low_bond, low_clear, crowded_data, after_day):
+def upper_singal_crowded(data, upper_bond, upper_clear, crowded_data, after_day):
+    data = data.merge(crowded_data, on = "Date")
+
+    singal_short = ["Keep"]
+    short_position = [0]
+    short = 0
+    tagret_date = 0
+
+    for i in range(0, (len(data)-2)):
+        if data.iloc[i,1] >= upper_bond:
+            short +=1
+            singal_short.append("Short")
+            short_position.append(short)
+            print(f"Make short position at {data.Date[(i+1)]}")
+        
+        elif (data.iloc[i,1] <= upper_clear) &  (short>0):
+            short_position.append(short)
+            singal_short.append("Clear")
+            short = 0
+        
+        elif (crowded_data.loc[i,"Crowding"] >= 1) & (short>0):
+            tagret_date = i + after_day
+            short_position.append(short)
+            singal_short.append("Keep")
+        
+        elif (i == tagret_date) & (short>0):
+            short_position.append(short)
+            singal_short.append("Clear")
+            short = 0
+
+        else:
+            singal_short.append("Keep")
+            short_position.append(short)
+    singal_short.append("Clear")
+    short_position.append(short)
+    output = {"Date": data.Date, 
+              "Signal_short": singal_short, 
+              "Short_position": short_position}
+    output = pd.DataFrame(output)
+    
+    return output
+
+def low_singal_crowded_two(data_1, data_2, low_bond, low_clear, crowded_data, after_day):
     data = data_1.merge(data_2, on = "Date")
     data = data.merge(crowded_data, on = "Date")
 
@@ -298,13 +340,13 @@ def low_singal_crowded_two(data_1,data_2, low_bond, low_clear, crowded_data, aft
     tagret_date = 0
 
     for i in range(0, (len(data)-2)):
-        if (data.iloc[i,1] <= low_bond) or (data.iloc[i,2] <= low_bond):
+        if data.iloc[i,1] <= low_bond or data.iloc[i,2] <= low_bond:
             long +=1
             singal_long.append("Long")
             long_position.append(long)
             print(f"Make long position at {data.Date[(i+1)]}")
         
-        elif ((data.iloc[i,1] >= low_clear) or (data.iloc[i,2] >= low_clear)) &  (long>0):
+        elif (data.iloc[i,1] >= low_clear or data.iloc[i,2]>=low_clear) &  (long>0):
             long_position.append(long)
             singal_long.append("Clear")
             long = 0
@@ -331,8 +373,10 @@ def low_singal_crowded_two(data_1,data_2, low_bond, low_clear, crowded_data, aft
 
     return output
 
+
 if __name__ == "__main__":
-    signal(x, up_bond = 0.95, low_bond= 0)
+    crowding_upper_signal(x, up_bond = 0.95)
+    crowding_lower_signal(x, lower_bond = 0.95)
     variable_rank(data, inital_window, sort = True,index = True)
     low_singal(data, low_bond, low_clear)
     upper_singal(data, upper_bond, upper_clear)
@@ -341,3 +385,5 @@ if __name__ == "__main__":
     back_test_long(price_data, signal_data)
     back_test_short(price_data, signal_data)
     dual_plot(price_data, factor_data, title, y_axis)
+    low_singal_crowded(data, low_bond, low_clear, crowded_data, after_day)
+    upper_singal_crowded(data, upper_bond, upper_clear, crowded_data, after_day)
